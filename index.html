@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Painel Guias — 500 Bonecos (Fix v3) • GEAP/CNEN</title>
+<style>
+:root{
+  --bgTop:#e7f5ff;        /* azul claro */
+  --bgBottom:#cfe9ff;     /* azul clarinho */
+  --panel:#ffffff;        /* cards claros */
+  --ink:#0b1b2a;          /* texto escuro */
+  --muted:#496581;        /* texto secundário */
+  --border:#d8e7ff;       /* borda suave */
+  --card:#f6fbff;         /* leve azul no fundo dos inputs */
+  --accent:#ffd84d;       /* amarelo principal */
+  --accent2:#ffea8a;      /* amarelo claro */
+  --sep:#ffd35a33;        /* separador amarelo translúcido */
+  --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,var(--bgTop),var(--bgBottom));
+  color:var(--ink);
+  font:500 14px/1.4 system-ui,Segoe UI,Roboto,Arial
+}
+.wrap{max-width:1340px;margin:12px auto;padding:0 12px}
+h1{margin:0 0 10px;font:800 22px/1.2 system-ui;color:#0b1b2a}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:12px}
+@media (max-width:1100px){.grid{grid-template-columns:1fr}}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+  overflow:hidden
+}
+.hd{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(180deg,#fff,#fff7d6)}
+.hd h2{margin:0;font:700 15px/1.2 system-ui;color:#1b2a3a}
+.bd{padding:12px}
+textarea{
+  width:100%;min-height:140px;background:var(--card);color:var(--ink);
+  border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;
+  font:500 14px/1.4 system-ui,Segoe UI,Roboto,Arial
+}
+input,select{
+  background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;width:100%;
+  font:500 14px/1.4 system-ui,Segoe UI,Roboto,Arial
+}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{
+  appearance:none;border:1px solid var(--border);
+  background:linear-gradient(180deg,#fffbe0,#fff1a6);
+  color:#3a2b00;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition:.15s
+}
+button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.b-primary{background:linear-gradient(180deg,#fff176,#ffd84d);border-color:#ffcc00;color:#2b2100}
+.b-ok{background:#22c55e;border-color:transparent;color:#fff}
+.b-danger{background:#ef4444;border-color:transparent;color:#fff}
+.small{font-size:13px;padding:6px 10px}
+.note{color:var(--muted);font-size:12.5px}
+.tableWrap{
+  border:1px solid var(--border);border-radius:10px;overflow:auto;
+  background:#ffffff;max-height:60vh
+}
+table{width:100%;border-collapse:separate;border-spacing:0}
+thead th{
+  position:sticky;top:0;
+  background:linear-gradient(180deg,#fffde5,#fff4b3);
+  color:#1b2a3a;font-size:12.5px;text-align:left;padding:9px 8px;border-bottom:1px solid var(--border)
+}
+tbody td{padding:10px 8px;border-bottom:1px solid #f0f4ff;font-size:14px;vertical-align:top}
+tbody tr:hover{background:#fffbe6}
+td[contenteditable]{background:#fffdf1;border-radius:8px}
+tr.sepRow td{border-bottom:2px dashed var(--sep)!important;box-shadow:0 2px 0 #fff4b3 inset}
+tr.match td{box-shadow:0 0 0 1px #ffe082 inset,0 0 15px #fff8c6}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px}
+.legend{font-size:12px;color:var(--muted)}
+.btn-del{border:1px solid var(--border);background:#ffe9a6;color:#8b0000;padding:4px 8px;border-radius:8px;font-size:12px;cursor:pointer}
+.btn-del:hover{background:#ffe082}
+.hero{
+  width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid var(--border);
+  box-shadow:0 6px 16px rgba(0,0,0,.08);margin:0 0 10px 0
+}
+[style*="margin-bottom:12px"]{margin-bottom:10px!important}
+
+/* Estilos dos Bonecos */
+.boneco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  background: var(--card);
+  border-radius: 8px;
+  min-height: 200px;
+  max-height: 300px; 
+  overflow-y: auto;
+}
+button.boneco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+  width: 100%;
+  min-height: 55px;
+  font-weight: 700;
+  border-radius: 8px;
+  background: #f0f4ff;
+  border: 2px solid var(--border);
+  color: var(--muted);
+  transition: .2s;
+}
+.boneco-head {
+  font-size: 9px;
+  font-weight: 800;
+  min-height: 12px;
+  color: var(--ink);
+  width: 100%;
+  text-align: center;
+  word-wrap: break-word;
+  line-height: 1.2;
+}
+.boneco-body {
+  font-size: 20px;
+  line-height: 1;
+  margin-top: 4px;
+}
+button.boneco.filled {
+  background: #fffbe6;
+  border-color: var(--accent);
+}
+button.boneco.processed {
+  background: #e6ffed;
+  border-color: var(--ok);
+  color: var(--ok);
+}
+button.boneco.processed .boneco-head {
+  color: var(--ok);
+  text-decoration: line-through;
+}
+
+/* Célula de valor vazia com brilho verde */
+td.valor-vazio {
+  background: #f0fff4 !important;
+  box-shadow: 0 0 8px #22c55e, 0 0 0 2px #22c55e inset;
+  transition: .3s;
+  cursor: pointer;
+}
+/* Linha selecionada para correção */
+tr.selected-for-fix td {
+  background-color: #fffbe6 !important;
+  box-shadow: 0 0 0 2px var(--warn) inset;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="hero" alt="Header" src="DATA_URI_HERE"/>
+
+  <h1>Painel Guias — GEAP/CNEN (persistente)</h1>
+
+  <div class="grid">
+    <div class="card">
+      <div class="hd"><h2>Filtros & Ferramentas</h2></div>
+      <div class="bd">
+      
+        <div class="card" id="quickFixBox" style="border:2px solid var(--ok);background:#f0fff4;margin-bottom:12px">
+          <div class="hd"><h2>Correção Rápida (para Valores Vazios)</h2></div>
+          <div class="bd">
+            <div class="legend" id="quickFixLabel" style="min-height:16px;">Clique em uma célula verde (valor vazio) para carregar.</div>
+            <input id="quickFixInput" placeholder="Nova Nomenclatura Manual..." disabled/>
+            <div class="btns" style="margin-top:8px">
+              <button class="small" id="quickFixApply" disabled>Aplicar na Linha</button>
+              <button class="b-ok small" id="quickFixApplyAll" disabled>Aplicar a TODOS Visíveis</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border:none;background:#fffdf1;margin-bottom:12px">
+          <div class="hd"><h2>Filtros simultâneos (3)</h2></div>
+          <div class="bd">
+            <div class="btns" style="gap:8px;flex-direction:column">
+              <div class="kv"><select class="f-col"></select><div class="btns"><select class="f-op"><option value="contains">Contém</option><option value="equals">Igual</option><option value="starts">Começa</option></select><input class="f-val" placeholder="valor…"/></div></div>
+              <div class="kv"><select class="f-col"></select><div class="btns"><select class="f-op"><option value="contains">Contém</option><option value="equals">Igual</option><option value="starts">Começa</option></select><input class="f-val" placeholder="valor…"/></div></div>
+              <div class="kv"><select class="f-col"></select><div class="btns"><select class="f-op"><option value="contains">Contém</option><option value="equals">Igual</option><option value="starts">Começa</option></select><input class="f-val" placeholder="valor…"/></div></div>
+            </div>
+            <div class="btns" style="margin-top:8px"><button class="b-ok small" id="applyFilters">Aplicar</button><button class="small" id="clearFilters">Limpar</button></div>
+            <div class="legend">As três condições se combinam com <b>AND</b>.</div>
+          </div>
+        </div>
+        <div class="card" style="border:none;background:#fffdf1;margin-bottom:12px">
+          <div class="hd"><h2>Comparação por lista</h2></div>
+          <div class="bd">
+            <select id="cmpCol" style="margin-bottom:8px"></select>
+            <textarea id="cmpBox" placeholder="Cole nomes/nº guia/CPF… (1 por linha ou separados por vírgula)"></textarea>
+            <div class="btns" style="margin-top:8px"><button class="b-ok small" id="applyCompare">Marcar coincidências</button><button class="small" id="clearCompare">Limpar marcações</button></div>
+            <div class="legend">Linhas coincidentes recebem brilho “MATCH”.</div>
+          </div>
+        </div>
+        <div class="card" style="border:none;background:#fffdf1;margin-bottom:12px">
+          <div class="hd"><h2>Catálogos: GEAP e CNEN</h2></div>
+          <div class="bd">
+            <div class="legend" style="margin-bottom:6px">Formato: <b>Código | Descrição | Valor</b> (TAB/;/,/|). Valor pode ter vírgula.</div>
+            <label>GEAP</label>
+            <textarea id="catGeap" placeholder="Código;Descrição;Valor"></textarea>
+            <label style="margin-top:8px">CNEN</label>
+            <textarea id="catCnen" placeholder="Código;Descrição;Valor"></textarea>
+            <div class="btns" style="margin-top:8px">
+              <button class="b-ok small" id="loadCats">Carregar catálogos</button>
+              <button class="small" id="clearCats">Limpar catálogos</button>
+            </div>
+            <div class="legend" id="catStats">Sem catálogos carregados.</div>
+          </div>
+        </div>
+        <div class="card" style="border:none;background:#fffdf1;">
+          <div class="hd"><h2>Valores & Nomenclatura</h2></div>
+          <div class="bd">
+            <div class="btns">
+              <button class="b-primary small" id="fillPrices">Preencher valores (GEAP → CNEN)</button>
+              <button class="small" id="suggestNomen">Sugerir nomenclatura (linhas filtradas)</button>
+            </div>
+            <div class="legend">1) Código; 2) Nome (fuzzy); 3) Preenche Valor/Fonte/Nomenclatura/Data Verif.</div>
+          </div>
+        </div>
+        <div class="card" style="border:none;background:#fffdf1;margin-top:12px">
+          <div class="hd"><h2>Exportar</h2></div>
+          <div class="bd">
+            <div class="btns">
+              <button class="small b-ok" id="btnCopy">Copiar (TSV visível)</button>
+              <button class="small b-ok" id="btnCsv">CSV (visível)</button>
+              <button class="small b-ok" id="btnTxt">TXT (TSV visível)</button>
+            </div>
+            <div class="legend">Operam sobre as <b>linhas visíveis</b> (após filtros).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="hd">
+        <h2>Depósito de Guias (500)</h2>
+        <div class="btns">
+           <button class="small" id="addCol">+ Acrescentar Coluna</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="boneco-grid" id="bonecoGrid">
+          </div>
+        
+        <div class="btns" style="margin-top:10px">
+          <button id="limparBonecos">Limpar Bonecos (reset)</button>
+          <button class="b-danger" id="limparTabela">LIMPAR TABELA (reset)</button>
+        </div>
+        <div class="note">
+          <b>Novo fluxo:</b> 1. Copie a guia (Ctrl+C). 2. Clique em (👤) para carregar (🧑). 3. Clique no (🧑) para processar (👋). 4. Clique no (👋) para resetar.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1">
+      <div class="hd">
+        <h2>Tabela (editável + separador por guia)</h2>
+        <div class="btns">
+          <button class="small b-ok" id="btnCopyAll">Copiar Tabela (tudo)</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="tableWrap" id="tblWrap">
+          <table id="tbl"><thead></thead><tbody></tbody></table>
+        </div>
+        <div class="note" style="margin-top:6px">Colunas extras: <b>Valor (R$)</b>, <b>Fonte Valor</b>, <b>Nomenclatura Correta</b>, <b>Nomenclatura Manual</b>, <b>Código Manual</b>, <b>Data Verificação</b>.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============== Estado & Persistência ============== */
+const BASE_COLS = [
+  "Nº Guia Operadora","Situação da Guia","Remessa","Lote","Documento",
+  "Registro ANS","Nº Guia do Prestador","Data de Emissão da Guia","Guia SIASS",
+  "Nome","Sexo","Data de Nascimento","CPF","RG",
+  "Item","Código Serviço","CBO","Data Atendimento","Descrição","Qtd",
+  "Valor (R$)","Fonte Valor","Nomenclatura Correta","Nomenclatura Manual","Código Manual",
+  "Data Verificação"
+];
+let EXTRA_COLS = [];
+let dataRows = [];
+let filters = [{col:"",op:"contains",val:""},{col:"",op:"contains",val:""},{col:"",op:"contains",val:""}];
+let compare = {col:"", terms:[]};
+let CAT_GEAP = [];
+let CAT_CNEN = [];
+let CAT_GEAP_RAW = "";
+let CAT_CNEN_RAW = "";
+let bonecoStorage = {}; 
+
+let selectedRowForFix = -1;
+
+const LS_KEY="__guias_neon_vals_remessa_on_v2_bonecos__";
+const $ = s=>document.querySelector(s);
+function headers(){ return [...BASE_COLS, ...EXTRA_COLS]; }
+
+/* ============== Persistência (sem mudança) ============== */
+function serializeCatalogText(items){
+  if(!items||!items.length) return "";
+  return items.map(it=>{
+    const val = (it.value??"")=== "" ? "" : it.value;
+    const valueStr = (val===null||val==="") ? "" : String(val).replace(".",",");
+    return [it.code||"", it.name||"", valueStr].join("; ");
+  }).join("\n");
+}
+function save(){
+  CAT_GEAP_RAW = ($("#catGeap")?.value||CAT_GEAP_RAW||"");
+  CAT_CNEN_RAW = ($("#catCnen")?.value||CAT_CNEN_RAW||"");
+  const snap = {
+    dataRows, EXTRA_COLS, filters, compare, 
+    CAT_GEAP, CAT_CNEN, CAT_GEAP_RAW, CAT_CNEN_RAW,
+    bonecoStorage
+  };
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(snap)); }catch(e){}
+}
+function load(){
+  try{
+    const snap = JSON.parse(localStorage.getItem(LS_KEY)||"null");
+    if(!snap) return;
+    dataRows = snap.dataRows||[];
+    EXTRA_COLS = snap.EXTRA_COLS||[];
+    filters = snap.filters||filters;
+    compare = snap.compare||compare;
+    CAT_GEAP = snap.CAT_GEAP||[];
+    CAT_CNEN = snap.CNEN||snap.CAT_CNEN||[];
+    CAT_GEAP_RAW = snap.CAT_GEAP_RAW || serializeCatalogText(CAT_GEAP);
+    CAT_CNEN_RAW = snap.CAT_CNEN_RAW || serializeCatalogText(CAT_CNEN);
+    bonecoStorage = snap.bonecoStorage || {};
+  }catch(e){}
+}
+
+/* ============== Helpers (sem mudança) ============== */
+function esc(s){return (s??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function norm(s){return (s??"").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();}
+function normalizeCode(c){ return (c??"").toString().trim().replace(/\D/g,"").replace(/^0+/,""); }
+function download(name, content, mime="text/plain;charset=utf-8"){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove(); },0);
+}
+function toCSV(cols, rows, sep=","){
+  const escC=s=>{
+    s=(s??"").toString();
+    return (s.includes('"')||s.includes(sep)||s.includes("\n")) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  };
+  const head=cols.map(escC).join(sep);
+  const body=rows.map(r=>cols.map(c=>escC(r[c]??"")).join(sep)).join("\n");
+  return head+"\n"+body;
+}
+function toTSV(cols, rows){
+  const sep="\t";
+  const escC=s=> (s??"").toString().replace(/\r?\n/g," ");
+  const head=cols.map(escC).join(sep);
+  const body=rows.map(r=>cols.map(c=>escC(r[c]??"")).join(sep)).join("\n");
+  return head+"\n"+body;
+}
+function moneyParse(v){
+  if(v==null||v==="") return 0===v?0:null;
+  let s=v.toString().trim();
+  s=s.replace(/[R$\s]/g,"");
+  if(/,\d{2}$/.test(s)) s=s.replace(/\./g,"").replace(",",".");
+  const n=parseFloat(s);
+  return Number.isFinite(n)?n:null;
+}
+function moneyFmt(n){
+  if(n==null||n==="") return "";
+  const v = typeof n==="number"? n : moneyParse(n);
+  if(v==null && v!==0) return "";
+  return Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}).replace("R$ ","R$ ");
+}
+
+/* ============== Parser Catálogos (sem mudança) ============== */
+function parseCatalog(text){
+  const lines = (text||"").replace(/\r/g,"").split("\n").map(l=>l.trim());
+  const out=[];
+  for(const ln of lines){
+    if(!ln) continue;
+    const parts = ln.split(/[\t;|,]+/).map(s=>s.trim()).filter(Boolean);
+    if(parts.length<2) continue;
+    let value = null, name=null, code=null;
+    if(/^\d{1,}$/.test(parts[0])){ code=parts[0]; }
+    for(let i=parts.length-1;i>=0;i--){
+      const v = moneyParse(parts[i]);
+      if(v!=null || parts[i]==="0"){ value=(v==null?0:v); parts.splice(i,1); break; }
+    }
+    if(!code){
+      const i = parts.findIndex(p=>/^\d{1,}$/.test(p));
+      if(i>=0){ code=parts[i]; parts.splice(i,1); }
+    }else{
+      const idx = parts.indexOf(code); if(idx>=0) parts.splice(idx,1);
+    }
+    name = parts.join(" ").replace(/\s{2,}/g," ").trim();
+    if(!name) continue;
+    out.push({code:code||"", codeNorm:normalizeCode(code||""), name, value:(value!=null?value:null), nname:norm(name)});
+  }
+  return out;
+}
+
+/* ============== Parser de Guias (sem mudança) ============== */
+function splitRegistros(text){
+  const raw=text.replace(/\r/g,"");
+  const lines=raw.split("\n");
+  const parts=[]; let buf=[];
+  for(const ln of lines){
+    if(/N[º°]\s*Guia\s*Operadora/i.test(ln) && buf.length){ parts.push(buf.join("\n")); buf=[ln]; }
+    else buf.push(ln);
+  }
+  if(buf.length) parts.push(buf.join("\n"));
+  return parts.length?parts:[raw];
+}
+function parseUmaGuia(text){
+  const raw=text.replace(/\r/g,"");  
+  const lines=raw.split("\n").map(l=>l.replace(/\t/g,"  "));
+  const findLine=(re,from=0)=>{for(let i=from;i<lines.length;i++) if(re.test(lines[i])) return i; return -1;}
+  const nextVal=(idx)=>{for(let i=idx+1;i<lines.length;i++){const s=lines[i].trim(); if(s) return s;} return "";}
+  const ih = findLine(/N[º°]\s*Guia\s*Operadora/i);
+  let guia="", situacao="", remessa="", lote="", documento="";
+  if (ih >= 0) {
+    const win = (n)=> (lines[ih+n]||"").trim();
+    const headerLine = [win(0),win(1)].join(" ").replace(/\s{2,}/g," ");
+    const guiaM = headerLine.match(/N[º°]?\s*Guia\s*Operadora.*?(\d{8,})/i);
+    if (guiaM) guia = guiaM[1];
+    let sit = "";
+    const sitIdx = headerLine.search(/Situação\s*da\s*Guia\s*:/i);
+    if(sitIdx>=0){
+      const after = headerLine.slice(sitIdx).replace(/Situação\s*da\s*Guia\s*:/i,"").trim();
+      sit = after.split(/\bAlterar\b/i)[0].trim();
+    }
+    if(!sit){
+      const s2 = win(1);
+      const m2 = s2.match(/\bGuia\s+[^\d]+/i);
+      sit = (m2? m2[0] : "").trim();
+    }
+    situacao = sit.replace(/\bAlterar\b/ig,"").trim();
+    const searchRLD = (label)=>{
+      let val = (headerLine.match(new RegExp(label+"\\s*:\\s*([0-9]+)", "i"))||[])[1];
+      if(val) return val;
+      for(let k=0;k<=3;k++){
+        const s = win(k);
+        if(!new RegExp(label,"i").test(s)) continue;
+        const m = s.match(new RegExp(label+"\\s*:\\s*([0-9]+)","i"));
+        if(m) return m[1];
+        return "";
+      }
+      return "";
+    };
+    remessa   = searchRLD("Remessa");
+    lote      = searchRLD("Lote");
+    documento = searchRLD("Documento");
+  }
+  const i2=findLine(/1\s*-\s*Registro\s*ANS.*4\s*-\s*Guia\s*SIASS/i);
+  let ans="",guiaPrest="",emissao="",siass="";
+  if(i2>=0){
+    const v=nextVal(i2);
+    const p=v.split(/ {2,}/).map(x=>x.trim()).filter(Boolean);
+    ans=p[0]||""; guiaPrest=p[1]||""; emissao=p[2]||"";
+    const maybe=lines[i2+2]?.trim()||"";
+    if(/^[A-Za-z0-9.:-]+$/.test(maybe)) siass=maybe;
+  }
+  if(!siass){ const m=raw.match(/\b[A-F0-9]{2,}(?:\.[A-F0-9]{2,}){3,}\b/i); if(m) siass=m[0]; }
+  const iSNCR=findLine(/14\s*-\s*Sexo.*15\s*-\s*Data.*16\s*-\s*CPF.*17\s*-\s*RG/i);
+  let nome="";  
+  if(iSNCR>=0){  
+    for(let i=iSNCR-1;i>=0;i--){
+      const s=(lines[i]||"").trim(); if(!s) continue;
+      const bad=/\bRJ\b|\bRIO\s+DE\s+JANEIRO\b|ÓRGÃO|DADOS|PROCEDIMENTO|CIDADE|UF/i;
+      const looks=/^[A-Za-zÀ-ú][A-Za-zÀ-ú ]+$/.test(s)&&/\s/.test(s)&&s.length>=6&&s.length<=80;
+      if(!bad.test(s)&&!/\d/.test(s)&&looks){nome=s;break;}
+    }
+  }
+  if(!nome){  
+    for(let s of lines){  
+      s=s.trim(); if(!s) continue;
+      const bad=/\bRJ\b|\bRIO\s+DE\s+JANEIRO\b|ÓRGÃO|UF/i;
+      const looks=/^[A-Za-zÀ-ú][A-Za-zÀ-ú ]+$/.test(s)&&/\s/.test(s)&&s.length>=6&&s.length<=80;
+      if(!bad.test(s)&&!/\d/.test(s)&&looks){nome=s;break;}
+    }
+  }
+  let sexo="",nasc="",cpf="",rg="";
+  if(iSNCR>=0){
+    const seq = [];
+    for(let k=1;k<=6;k++){
+      const s=(lines[iSNCR+k]||"").trim();
+      if(s) seq.push(s);
+    }
+    const sxLine = seq.find(s=>/FEMININO|MASCULINO/i.test(s));
+    const dnLine = seq.find(s=>/\d{2}\/\d{2}\/\d{4}/.test(s));
+    const cpfLine = seq.find(s=>/\d{3}\.\d{3}\.\d{3}-\d{2}/.test(s));
+    const rgLine = seq.find(s=>/^[A-Za-z0-9.\-]{3,}$/.test(s) && !/\d{2}\/\d{2}\/\d{4}/.test(s) && !/\d{3}\.\d{3}\.\d{3}-\d{2}/.test(s));
+    sexo = (sxLine?.match(/FEMININO|MASCULINO/i)||[])[0] || "";
+    nasc = (dnLine?.match(/\d{2}\/\d{2}\/\d{4}/)||[])[0] || "";
+    cpf  = (cpfLine?.match(/\d{3}\.\d{3}\.\d{3}-\d{2}/)||[])[0] || "";
+    rg   = rgLine || "";
+  }
+  const ip=findLine(/^\s*Item\s+Código\s+Serviço\s+CBO\s+Data\s+Atendimento\s+Descrição\s+Qtd/i);
+  const procs=[];
+  if(ip>=0){
+    for(let i=ip+1;i<lines.length;i++){
+      const L=lines[i].trim(); if(!L) continue;
+      if(!/^\d+\s+/.test(L)) continue;
+      const date=(L.match(/(\d{2}\/\d{2}\/\d{4})/)||[])[1]||"";
+      const t=L.split(/\s+/); const item=t[0]||"", cod=t[1]||"";
+      let cbo=""; if(date){
+        const between=L.slice(L.indexOf(cod)+cod.length, L.indexOf(date)).trim();
+        if(between && between.length<=15) cbo=between.replace(/\s+/g," ");
+      }
+      const qtdM=L.match(/(\d+(?:[.,]\d+)?)(?:\s*btnDel.*)?\s*$/);
+      const qtd=qtdM? qtdM[1].replace(".",",") : "";
+      let desc=L;
+      if(date) desc=desc.slice(desc.indexOf(date)+date.length).trim();
+      if(qtdM) desc=desc.replace(qtdM[1],"").replace(/btnDel.*$/,"").trim();
+      procs.push({item,cod,cbo,data:date,desc,qtd});
+    }
+  }
+  return {guia,situacao,remessa,lote,documento,ans,guiaPrest,emissao,siass,nome,sexo,nasc,cpf,rg,procs};
+}
+
+/* ============== expandLinhas (sem mudança) ============== */
+function expandLinhas(rec){
+  const base = {
+    "Nº Guia Operadora":rec.guia,"Situação da Guia":rec.situacao,
+    "Remessa":rec.remessa,"Lote":rec.lote,"Documento":rec.documento,
+    "Registro ANS":rec.ans,"Nº Guia do Prestador":rec.guiaPrest,"Data de Emissão da Guia":rec.emissao,"Guia SIASS":rec.siass,
+    "Nome":rec.nome,"Sexo":rec.sexo,"Data de Nascimento":rec.nasc,"CPF":rec.cpf,"RG":rec.rg
+  };
+  if(!rec.procs.length){
+    return [{
+      ...base,
+      "Item":"","Código Serviço":"","CBO":"","Data Atendimento":"","Descrição":"","Qtd":"",
+      "Valor (R$)":"","Fonte Valor":"","Nomenclatura Correta":"",
+      "Nomenclatura Manual":"", "Código Manual":"", "Data Verificação":""
+    }];
+  }
+  return rec.procs.map(p=>({
+    ...base,
+    "Item":p.item,"Código Serviço":p.cod,"CBO":p.cbo,"Data Atendimento":p.data,"Descrição":p.desc,"Qtd":p.qtd,
+    "Valor (R$)":"","Fonte Valor":"","Nomenclatura Correta":"",
+    "Nomenclatura Manual": p.desc, "Código Manual":"", "Data Verificação":""
+  }));
+}
+
+/* ============== Matching (sem mudança) ============== */
+function bestMatchByName(name, catalogs){
+  const target = norm(name);
+  let best=null, bestScore=0;
+  for(const cat of catalogs){
+    for(const it of cat){
+      const n = it.nname;
+      let score=0;
+      if(n===target) score=1.0;
+      else if(n.includes(target)||target.includes(n)) score=0.8;
+      else{
+        const a=new Set(n.split(" ")), b=new Set(target.split(" "));
+        let inter=0; b.forEach(w=>{ if(a.has(w)) inter++; });
+        const denom = Math.max(a.size,b.size)||1;
+        score = inter/denom * 0.75;
+      }
+      if(score>bestScore){ bestScore=score; best=it; }
+      if(bestScore>=0.999) break;
+    }
+    if(bestScore>=0.999) break;
+  }
+  return bestScore>=0.55 ? best : null;
+}
+function lookupValue(row){
+  const codeRaw = (row["Código Serviço"]||"").toString();
+  const codeNorm = (row["Código Manual"]||"").toString().trim() ?  
+                  normalizeCode(row["Código Manual"]) : normalizeCode(codeRaw);
+  const desc = row["Nomenclatura Manual"]||row["Descrição"]||""; 
+  if(codeNorm){
+    let item = CAT_GEAP.find(x=>x.codeNorm===codeNorm);
+    if(item && (item.value!=null)) return {value:item.value, fonte:"GEAP", name:item.name, via:"code"};
+  }
+  if(codeNorm){
+    let item = CAT_CNEN.find(x=>x.codeNorm===codeNorm);
+    if(item && (item.value!=null)) return {value:item.value, fonte:"CNEN", name:item.name, via:"code"};
+  }
+  if(desc){
+    const target = norm(desc);
+    const g = CAT_GEAP.find(x=>x.nname===target);
+    if(g && (g.value!=null)) return {value:g.value, fonte:"GEAP", name:g.name, via:"nameExact"};
+  }
+  if(desc){
+    const target = norm(desc);
+    const c = CAT_CNEN.find(x=>x.nname===target);
+    if(c && (c.value!=null)) return {value:c.value, fonte:"CNEN", name:c.name, via:"nameExact"};
+  }
+  if(desc){
+    const g = bestMatchByName(desc, [CAT_GEAP]);
+    if(g && (g.value!=null)) return {value:g.value, fonte:"GEAP", name:g.name, via:"nameFuzzy"};
+  }
+  if(desc){
+    const c = bestMatchByName(desc, [CAT_CNEN]);
+    if(c && (c.value!=null)) return {value:c.value, fonte:"CNEN", name:c.name, via:"nameFuzzy"};
+  }
+  return null;
+}
+
+/* ============== Filtros/Render (ATUALIZADO) ============== */
+function renderFiltersUI(){
+  const cols = headers();
+  document.querySelectorAll(".f-col").forEach(sel=>{
+    const keep=sel.value;
+    sel.innerHTML = "<option value=''>[coluna]</option>"+cols.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+    if(keep && cols.includes(keep)) sel.value=keep;
+  });
+  const cmp=$("#cmpCol"); const cur=cmp.value;
+  cmp.innerHTML="<option value=''>[coluna para comparar]</option>"+cols.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  cmp.value=cur && cols.includes(cur) ? cur : (compare.col||"");
+}
+function applyAllFilters(rows){
+  const active = filters.filter(f=>f.col && f.val!=="");
+  if(!active.length) return rows;
+  return rows.filter(r=>active.every(f=>{
+    const v=(r[f.col]??"").toString(); const nv=norm(v), q=norm(f.val);
+    if(f.op==="equals") return nv===q;
+    if(f.op==="starts") return nv.startsWith(q);
+    return nv.includes(q);
+  }));
+}
+function computeMatches(rows){
+  if(!compare.col || !compare.terms.length) return new Set();
+  const terms=compare.terms.map(norm);
+  const set=new Set();
+  rows.forEach((r,idx)=>{ const nv=norm(r[compare.col]??""); if(terms.some(t=>nv.includes(t))) set.add(idx); });
+  return set;
+}
+
+/* ATUALIZADO: renderTable() para destacar linha selecionada */
+function renderTable(){
+  const wrap = $("#tblWrap");
+  const keepScroll = wrap.scrollTop;
+  const cols=headers(); const thead=$("#tbl thead"), tbody=$("#tbl tbody");
+  thead.innerHTML="<tr><th>🗑️</th>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr>";
+  const filtered=applyAllFilters(dataRows); const matchSet=computeMatches(filtered);
+  tbody.innerHTML="";
+  let prevGuia=null;
+  filtered.forEach((r,i)=>{
+    const guia=r["Nº Guia Operadora"]??"";
+    if(prevGuia!==null && guia!==prevGuia){
+      const sep=document.createElement("tr"); sep.className="sepRow"; sep.innerHTML=`<td></td><td colspan="${cols.length}"></td>`; tbody.appendChild(sep);
+    }
+    prevGuia=guia;
+    const tr=document.createElement("tr");
+    if(matchSet.has(i)) tr.classList.add("match");
+    
+    const baseIndex = dataRows.indexOf(filtered[i]);
+    if (baseIndex === selectedRowForFix) {
+      tr.classList.add("selected-for-fix");
+    }
+    
+    const delCell = `<td><button class="btn-del" data-del="${baseIndex}">Excluir</button></td>`;
+    
+    tr.innerHTML = delCell + cols.map(c => {
+        const val = r[c] ?? "";
+        let className = "";
+        if (c === "Valor (R$)" && val === "") {
+            className = " class='valor-vazio'";
+        }
+        return `<td${className} contenteditable data-i="${baseIndex}" data-c="${c}">${esc(val)}</td>`;
+    }).join("");
+    
+    tbody.appendChild(tr);
+  });
+  requestAnimationFrame(()=>{ wrap.scrollTop = keepScroll; });
+  save();
+}
+
+/* ============== Exportação (sem mudança) ============== */
+function getVisibleRows(){ return applyAllFilters(dataRows); }
+function getAllRows(){ return dataRows.slice(); }
+function doCopyTSVVisible(){
+  const cols=headers(); const rows=getVisibleRows();
+  copyToClipboard(toTSV(cols, rows));
+}
+function doCSVVisible(){
+  const cols=headers(); const rows=getVisibleRows();
+  download("guias_visivel.csv", toCSV(cols, rows, ","), "text/csv;charset=utf-8");
+}
+function doTXTVisible(){
+  const cols=headers(); const rows=getVisibleRows();
+  download("guias_visivel.txt", toTSV(cols, rows), "text/plain;charset=utf-8");
+}
+async function copyToClipboard(text){
+  try{ await navigator.clipboard.writeText(text); alert("Copiado."); }
+  catch(e){
+    const ta=document.createElement("textarea");
+    ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+    alert("Copiado (fallback).");
+  }
+}
+function doCopyAllTSV(){
+  const cols=headers(); const rows=getAllRows();
+  copyToClipboard(toTSV(cols, rows));
+}
+
+
+/* ============== FUNÇÕES DOS BONECOS (sem mudança) ============== */
+function createBonecos() {
+  const grid = $("#bonecoGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  for (let i = 1; i <= 500; i++) { 
+    const btn = document.createElement("button");
+    btn.className = "boneco";
+    btn.dataset.id = i;
+    btn.innerHTML = `
+      <span class="boneco-head">[vazio]</span>
+      <span class="boneco-body">👤</span> 
+    `;
+    btn.addEventListener("click", handleBonecoClick);
+    grid.appendChild(btn);
+  }
+  updateBonecosFromStorage();
+}
+function updateBonecosFromStorage() {
+  document.querySelectorAll("button.boneco").forEach(btn => {
+    const id = btn.dataset.id;
+    if (bonecoStorage[id]) {
+      try {
+        const parsed = parseUmaGuia(bonecoStorage[id]);
+        const nomeCurto = (parsed.nome || "???").split(" ")[0]; 
+        btn.querySelector(".boneco-head").textContent = nomeCurto;
+        btn.querySelector(".boneco-body").textContent = "🧑";
+        btn.classList.add("filled");
+      } catch (e) {
+        btn.querySelector(".boneco-head").textContent = "Erro!";
+        btn.querySelector(".boneco-body").textContent = "🧑";
+        btn.classList.add("filled");
+      }
+    } else {
+      btn.querySelector(".boneco-head").textContent = "[vazio]";
+      btn.querySelector(".boneco-body").textContent = "👤";
+      btn.classList.remove("filled", "processed");
+    }
+  });
+}
+function resetSingleBoneco(id, btn) {
+  delete bonecoStorage[id];
+  btn.classList.remove("filled", "processed");
+  btn.querySelector(".boneco-head").textContent = "[vazio]";
+  btn.querySelector(".boneco-body").textContent = "👤"; 
+  save();
+}
+async function handleBonecoClick(e) {
+  const btn = e.currentTarget;
+  const id = btn.dataset.id;
+  if (btn.classList.contains("processed")) {
+    resetSingleBoneco(id, btn);
+  } else if (btn.classList.contains("filled")) {
+    await processBoneco(id, btn);
+  } else {
+    await addDataToBoneco(id, btn);
+  }
+}
+async function addDataToBoneco(id, btn) {
+  let text = "";
+  try {
+    text = await navigator.clipboard.readText();
+    if (!text) {
+      alert("Área de transferência vazia.");
+      return;
+    }
+  } catch (err) {
+    console.error("Erro ao ler clipboard: ", err);
+    alert("Falha ao ler da área de transferência.\n\nO navegador pediu permissão? Você precisa 'Permitir'.");
+    return;
+  }
+  bonecoStorage[id] = text;
+  let nomeCurto = "???";
+  try {
+     const parsed = parseUmaGuia(text);
+     nomeCurto = (parsed.nome || "???").split(" ")[0];
+  } catch(e) {}
+  
+  btn.querySelector(".boneco-head").textContent = nomeCurto;
+  btn.querySelector(".boneco-body").textContent = "🧑"; 
+  btn.classList.add("filled");
+  save();
+}
+async function processBoneco(id, btn) {
+  const txt = bonecoStorage[id];
+  if (!txt) return; 
+  try {
+    const regs = splitRegistros(txt).map(parseUmaGuia);
+    const novas = regs.flatMap(expandLinhas);
+    novas.forEach(n => EXTRA_COLS.forEach(ec => { if (!(ec in n)) n[ec] = ""; }));
+    dataRows.push(...novas);
+    
+    btn.classList.remove("filled");
+    btn.classList.add("processed");
+    btn.querySelector(".boneco-body").textContent = "👋"; 
+    
+    renderTable(); 
+  } catch (e) {
+    console.error("Erro ao processar boneco: ", e);
+    alert(`Erro ao processar dados do boneco ${id}.`);
+  }
+}
+function limparBonecos() {
+  if (!confirm("Limpar todos os bonecos carregados? Isso não afeta a tabela.")) return;
+  bonecoStorage = {};
+  document.querySelectorAll("button.boneco").forEach(btn => {
+    btn.classList.remove("filled", "processed");
+    btn.querySelector(".boneco-head").textContent = "[vazio]";
+    btn.querySelector(".boneco-body").textContent = "👤"; 
+  });
+  save(); 
+}
+
+/* ============== NOVA FUNÇÃO HELPER ============== */
+function resetQuickFix() {
+  $("#quickFixLabel").textContent = "Clique em uma célula verde (valor vazio) para carregar.";
+  $("#quickFixInput").value = "";
+  $("#quickFixInput").disabled = true;
+  $("#quickFixApply").disabled = true;
+  $("#quickFixApplyAll").disabled = true; // Desabilita o novo botão também
+  
+  document.querySelectorAll("tr.selected-for-fix").forEach(r => r.classList.remove("selected-for-fix"));
+  selectedRowForFix = -1;
+}
+
+
+/* ============== Eventos (ATUALIZADO) ============== */
+function bindEvents(){
+  $("#limparBonecos").addEventListener("click", limparBonecos);
+  $("#limparTabela").addEventListener("click", ()=>{
+    if(!dataRows.length) return;
+    if(!confirm("Limpar toda a tabela? (Os bonecos não serão limpos)")) return;
+    dataRows=[]; 
+    renderTable();
+  });
+
+  /* ATUALIZADO: Edição direta */
+  $("#tbl").addEventListener("input",(e)=>{
+    const td=e.target.closest("td"); if(!td || !td.dataset) return;
+    const i=+td.dataset.i, c=td.dataset.c;
+    if(Number.isInteger(i) && headers().includes(c)){ 
+      dataRows[i][c]=td.innerText; 
+      save(); 
+      if (c === "Valor (R$)") {
+        if (td.innerText.trim() !== "") {
+          td.classList.remove("valor-vazio");
+        } else {
+          td.classList.add("valor-vazio");
+        }
+      }
+    }
+  });
+
+  /* ATUALIZADO: Evento de clique na Tabela */
+  $("#tbl").addEventListener("click",(e)=>{
+    const btn = e.target.closest("button.btn-del");
+    if(btn) {
+      const idx = +btn.dataset.del;
+      if(!Number.isInteger(idx) || idx<0 || idx>=dataRows.length) return;
+      if(!confirm("Excluir esta linha?")) return;
+      dataRows.splice(idx,1);
+      renderTable();
+      return; 
+    }
+    
+    const td = e.target.closest("td");
+    if (!td) return;
+
+    if (td.classList.contains("valor-vazio")) {
+      const baseIndex = +td.dataset.i;
+      if (!Number.isInteger(baseIndex) || baseIndex >= dataRows.length) return;
+      
+      selectedRowForFix = baseIndex;
+      const descText = dataRows[selectedRowForFix]["Descrição"] || "";
+      const guiaNum = dataRows[selectedRowForFix]["Nº Guia Operadora"] || "??";
+      
+      $("#quickFixLabel").textContent = `Corrigindo Linha (Guia: ${guiaNum})`;
+      $("#quickFixInput").value = descText; 
+      $("#quickFixInput").disabled = false;
+      $("#quickFixApply").disabled = false;
+      $("#quickFixApplyAll").disabled = false; // Habilita o novo botão
+
+      document.querySelectorAll("tr.selected-for-fix").forEach(r => r.classList.remove("selected-for-fix"));
+      td.closest("tr").classList.add("selected-for-fix");
+    }
+  });
+  
+  // ATUALIZADO: Evento para o botão de Aplicar Correção (1 Linha)
+  $("#quickFixApply").addEventListener("click", () => {
+    if (selectedRowForFix < 0 || selectedRowForFix >= dataRows.length) {
+      alert("Nenhuma linha selecionada.");
+      return;
+    }
+    const newText = $("#quickFixInput").value.trim();
+    if (!newText) {
+      alert("O campo de correção não pode estar vazio.");
+      return;
+    }
+    dataRows[selectedRowForFix]["Nomenclatura Manual"] = newText;
+    
+    resetQuickFix(); 
+    renderTable(); 
+    
+    alert("Correção aplicada. Tente 'Preencher valores' novamente para buscar o preço com o novo nome.");
+  });
+  
+  // NOVO: Evento para o botão de Aplicar Correção em Massa (Todos Visíveis)
+  $("#quickFixApplyAll").addEventListener("click", () => {
+    const newText = $("#quickFixInput").value.trim();
+    if (!newText) {
+      alert("O campo de correção não pode estar vazio.");
+      return;
+    }
+    
+    // Pega todas as linhas visíveis (filtradas)
+    const visibleRows = applyAllFilters(dataRows);
+    
+    if (visibleRows.length === 0) {
+      alert("Nenhuma linha visível para aplicar.");
+      return;
+    }
+    
+    if (!confirm(`Aplicar "${newText}" na "Nomenclatura Manual" de TODAS as ${visibleRows.length} linhas visíveis?`)) {
+      return;
+    }
+    
+    // Loop e aplica a mudança em todas
+    visibleRows.forEach(row => {
+      row["Nomenclatura Manual"] = newText;
+    });
+    
+    resetQuickFix(); 
+    renderTable(); 
+    
+    alert(`Correção aplicada a ${visibleRows.length} linhas. Tente 'Preencher valores' novamente.`);
+  });
+
+  // NOVO: Evento para limpar a seleção se clicar fora
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#tbl") && !e.target.closest("#quickFixBox")) { 
+      resetQuickFix();
+    }
+  });
+
+  // Filtros (sem mudança)
+  $("#applyFilters").addEventListener("click", ()=>{
+    const rows=Array.from(document.querySelectorAll(".kv"));
+    filters = rows.map(row=>{
+      const col=row.querySelector(".f-col").value;
+      const op =row.querySelector(".f-op").value;
+      const val=row.querySelector(".f-val").value.trim();
+      return {col: headers().includes(col)?col:"", op, val};
+    });
+    save(); renderTable();
+  });
+  $("#clearFilters").addEventListener("click", ()=>{
+    filters=[{col:"",op:"contains",val:""},{col:"",op:"contains",val:""},{col:"",op:"contains",val:""}];
+    document.querySelectorAll(".f-col").forEach(el=>el.value="");
+    document.querySelectorAll(".f-op").forEach(el=>el.value="contains");
+    document.querySelectorAll(".f-val").forEach(el=>el.value="");
+    save(); renderTable();
+  });
+
+  // Comparação (sem mudança)
+  $("#applyCompare").addEventListener("click", ()=>{
+    compare.col=$("#cmpCol").value;
+    compare.terms=$("#cmpBox").value.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean);
+    save(); renderTable();
+  });
+  $("#clearCompare").addEventListener("click", ()=>{
+    compare={col:"",terms:[]}; $("#cmpCol").value=""; $("#cmpBox").value="";
+    save(); renderTable();
+  });
+
+  // Catálogos (sem mudança)
+  $("#loadCats").addEventListener("click", ()=>{
+    CAT_GEAP_RAW = $("#catGeap").value||"";
+    CAT_CNEN_RAW = $("#catCnen").value||"";
+    CAT_GEAP = parseCatalog(CAT_GEAP_RAW);
+    CAT_CNEN = parseCatalog(CAT_CNEN_RAW);
+    $("#catStats").textContent=`GEAP: ${CAT_GEAP.length} itens • CNEN: ${CAT_CNEN.length} itens`;
+    save();
+  });
+  $("#clearCats").addEventListener("click", ()=>{
+    CAT_GEAP=[]; CAT_CNEN=[]; CAT_GEAP_RAW=""; CAT_CNEN_RAW="";
+    $("#catGeap").value=""; $("#catCnen").value="";
+    $("#catStats").textContent="Sem catálogos carregados.";
+    save();
+  });
+
+  /* ATUALIZADO: Preenchimento de valores */
+  $("#fillPrices").addEventListener("click", ()=>{
+    if(!CAT_GEAP.length && !CAT_CNEN.length){ alert("Carregue os catálogos GEAP/CNEN primeiro."); return; }
+    const today = new Date().toLocaleDateString("pt-BR");
+    
+    const rows = dataRows; // Aplica em todas as linhas
+    
+    rows.forEach(r=>{
+      const found = lookupValue(r);
+      if(found){
+        r["Valor (R$)"] = moneyFmt(found.value);
+        r["Fonte Valor"] = found.fonte;
+        r["Nomenclatura Correta"] = found.name;
+        if (!r["Data Verificação"]) {
+           r["Data Verificação"] = today;
+        }
+      }
+    });
+    renderTable();
+  });
+
+  // Sugerir nomenclatura (sem mudança)
+  $("#suggestNomen").addEventListener("click", ()=>{
+    if(!CAT_GEAP.length && !CAT_CNEN.length){ alert("Carregue os catálogos GEAP/CNEN primeiro."); return; }
+    const rows = applyAllFilters(dataRows);
+    rows.forEach(r=>{
+      const code=(r["Código Serviço"]||"").toString().trim();
+      const codeNorm = normalizeCode(code);
+      let item =
+        (codeNorm && (CAT_GEAP.find(x=>x.codeNorm===codeNorm) || CAT_CNEN.find(x=>x.codeNorm===codeNorm))) ||
+        bestMatchByName(r["Nomenclatura Manual"]||r["Descrição"]||"", [CAT_GEAP, CAT_CNEN]);
+      if(item){ r["Nomenclatura Manual"]=item.name; r["Código Manual"]=item.code||""; }
+    });
+    renderTable();
+  });
+  const addColBtn = document.getElementById("addCol");
+  if(addColBtn){
+    addColBtn.addEventListener("click", ()=>{
+      const name = prompt("Nome da nova coluna:");
+      if(!name) return;
+      const cols=headers(); if(cols.includes(name)) return alert("Já existe uma coluna com esse nome.");
+      EXTRA_COLS.push(name); dataRows.forEach(r=>r[name]="");
+      renderFiltersUI(); renderTable();
+    });
+  }
+  $("#btnCopy").addEventListener("click", ()=>{doCopyTSVVisible()});
+  $("#btnCsv").addEventListener("click", ()=>{doCSVVisible()});
+  $("#btnTxt").addEventListener("click", ()=>{doTXTVisible()});
+  $("#btnCopyAll").addEventListener("click", ()=>{doCopyAllTSV()});
+}
+
+/* ============== Boot (sem mudança) ============== */
+function init(){
+  load(); 
+  createBonecos(); 
+  bindEvents();
+  renderFiltersUI();
+
+  if($("#catGeap")) $("#catGeap").value = CAT_GEAP_RAW||serializeCatalogText(CAT_GEAP);
+  if($("#catCnen")) $("#catCnen").value = CAT_CNEN_RAW||serializeCatalogText(CAT_CNEN);
+  $("#catStats").textContent = (CAT_GEAP.length||CAT_CNEN.length)
+    ? `GEAP: ${CAT_GEAP.length} itens • CNEN: ${CAT_CNEN.length} itens`
+    : "Sem catálogos carregados.";
+
+  document.querySelectorAll(".f-col").forEach((el,i)=>{ if(filters[i]) el.value=filters[i].col||""; });
+  document.querySelectorAll(".f-op").forEach((el,i)=>{ if(filters[i]) el.value=filters[i].op||"contains"; });
+  document.querySelectorAll(".f-val").forEach((el,i)=>{ if(filters[i]) el.value=filters[i].val||""; });
+  $("#cmpCol").value=compare.col||""; $("#cmpBox").value=(compare.terms||[]).join("\n");
+
+  renderTable(); 
+}
+init();
+</script>
+</body>
+</html>
